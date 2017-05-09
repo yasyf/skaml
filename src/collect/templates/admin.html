@@ -1,0 +1,8 @@
+{% extends "_base.html" %}
+{% block title %}Zoobar Docs{% endblock %}
+{% block body %}
+  {% for session in sessions %}
+    <h3>{{session['id']}}</h3>
+    <pre>{{session['words'] | tojson | safe}}</pre>
+  {% endfor %}
+{% endblock %}

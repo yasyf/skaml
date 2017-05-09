@@ -25,6 +25,17 @@ let words = [];
 var currentWord = new Word();
 var currentChar;
 
+setInterval(() => {
+  if (words.length === 0) {
+    return;
+  }
+  $.ajax('/log', {
+    data : JSON.stringify({words}),
+    contentType : 'application/json',
+    type : 'POST',
+  });
+}, 1000);
+
 $(document).ready(() => {
   $('#editarea').keydown(e => {
     if (e.keyCode === SPACEBAR) {
