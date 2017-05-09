@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% block meta %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="static/css/app.css"></link>
+    <style>
+      {% block css %}{% endblock %}
+    </style>
+    <script type="text/javascript" src="static/script/app.js"></script>
+    <script>
+      {% block js %}{% endblock %}
+    </script>
+  </head>
+  <body>
+    <div id='container'>
+      <div class='main'>
+        <!-- Body -->
+        <div id='body'>
+          {% block body %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
