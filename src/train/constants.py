@@ -1,0 +1,4 @@
+WINDOW_SIZE = 5
+VECTOR_SIZE = 25
+CHARACTERS = "abcdefghijklmnopqrstuvwxyz1234567890"
+JPEG_QUALITY = 70
