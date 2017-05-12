@@ -20,14 +20,14 @@ def transform(obj):
   X = np.empty(len(words), dtype=np.object)
   Y = np.empty(len(words), dtype=np.object)
   for i, word in enumerate(words):
-    chars = [x for x in word['characters'] if is_valid_char(x)]
+    chars = [(j, x) for j, x in enumerate(word['characters']) if is_valid_char(x)]
     x = np.empty((len(chars), ONE_HOT_SIZE), dtype=np.float)
     y = np.empty((len(chars) - 1,), dtype=np.float)
-    for j, char in enumerate(chars):
-      x[j,:] = one_hot(char)
-      if j == 0:
+    for k, (j, char) in enumerate(chars):
+      x[k,:] = one_hot(char)
+      if k == 0:
         continue
-      y[j-1] = release_time_diff(chars[j-1], char)
+      y[k-1] = release_time_diff(word['characters'][j-1], char)
     X[i] = x
     Y[i] = y
   return X, Y
