@@ -9,6 +9,9 @@
   <hr>
   {% for session in sessions %}
     <h3><a href="{{url_for('detail_view', id=session['id'])}}">{{session['id']}}</a></h3>
+    {% if session.get('name') %}
+      <h4>{{session['name']}}</h4>
+    {% endif %}
     <pre>{{session['words'] | tojson | safe}}</pre>
   {% endfor %}
 {% endblock %}

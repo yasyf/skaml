@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+
+  "name": "SNARL",
+  "description": "A user study for 6.858.",
+  "version": "0.0.1",
+
+  "permissions": [
+    "activeTab",
+    "storage",
+    "https://snarl.herokuapp.com/"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": ["lib/jquery-3.2.1.min.js", "src/lib.js", "src/inject.js"]
+    }
+  ],
+
+  "update_url": "https://snarl.herokuapp.com/client/updates.xml",
+}
