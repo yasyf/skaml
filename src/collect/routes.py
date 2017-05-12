@@ -1,8 +1,8 @@
 from flask import render_template, session, jsonify, request, send_file
 from app import app
 from helpers.mongo import db
-from helpers.transform import transform, encode, filter_valid
-from helpers.learn import mean_delays
+from helpers.transform import transform, encode_chars, filter_valid
+from helpers.learn import string_delay, chars_delay
 import uuid, io
 import numpy as np
 
@@ -33,15 +33,20 @@ def detail_view(id):
   return render_template('details.html', id=id, words=words, delays=delays)
 
 @app.route('/means/<id>/<password>')
-def mean_view(id, password):
-  obj = db.sessions.find_one({'id': session['id']})
-  X, Y = transform(obj)
-  delays = mean_delays(X, Y)
+def string_mean_view(id, password):
+  obj = db.sessions.find_one({'id': id})
+  delays = string_delay(obj, password)
+  return jsonify({'delays': delays})
+
+@app.route('/means/<id>', methods=['POST'])
+def chars_mean_view(id):
+  obj = db.sessions.find_one({'id': id})
+  delays = chars_delay(obj, request.json['word']['characters'])
   return jsonify({'delays': delays})
 
 @app.route('/encode', methods=['POST'])
 def encode_view():
-  return jsonify({'encoded': encode(request.json['word']['characters'])})
+  return jsonify({'encoded': encode_chars(request.json['word']['characters'])})
 
 @app.route('/export/<id>')
 def export_view(id):

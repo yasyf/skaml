@@ -1,11 +1,35 @@
-from transform import ONE_HOT_SIZE
+from transform import ONE_HOT_SIZE, transform, str_to_idxs, chars_to_idxs
 import numpy as np
 
 def one_hot_to_ind(x):
-  return np.nonzero(x)[0]
+  return np.flatnonzero(x)[0]
 
 def mean_delays(X, Y):
-  delays = np.zeros((ONE_HOT_SIZE, ONE_HOT_SIZE))
-  for i, word in X:
-    for c in characters:
-      pass
+  means = np.zeros((ONE_HOT_SIZE, ONE_HOT_SIZE))
+  counts = np.zeros((ONE_HOT_SIZE, ONE_HOT_SIZE))
+
+  for i, word in enumerate(X):
+    for j, char in enumerate(word):
+      if j == 0:
+        continue
+      c1 = one_hot_to_ind(word[j - 1])
+      c2 = one_hot_to_ind(char)
+      means[c1][c2] += Y[i][j - 1]
+      counts[c1][c2] += 1
+
+  counts[np.where(counts == 0)] = 1
+  means /= counts
+  mean = means.ravel()[np.flatnonzero(means)].mean()
+  means[np.where(means == 0)] = mean
+  return means
+
+def idxs_delay(obj, idxs):
+  X, Y = transform(obj)
+  means = mean_delays(X, Y)
+  return [round(means[idxs[i]][idx], 2) for i, idx in enumerate(idxs[1:])]
+
+def string_delay(obj, password):
+  return idxs_delay(obj, str_to_idxs(password))
+
+def chars_delay(obj, chars):
+  return idxs_delay(obj, chars_to_idxs(chars))

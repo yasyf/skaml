@@ -5,3 +5,9 @@ $(document).ready(() => {
     elt.html(char);
   });
 });
+
+function calc_mean_delays(word) {
+  post(`/means/${window.id}`, {word}).then(resp => $('#means').html(JSON.stringify(resp.delays)));
+}
+
+monitor('#mean_input', calc_mean_delays);

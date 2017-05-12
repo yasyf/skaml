@@ -5,7 +5,13 @@ LAST_CODE = 90
 ONE_HOT_SIZE = LAST_CODE - FIRST_CODE + 1
 TIME_DIFF_THRESHOLD = 300
 
-def encode(chars):
+def str_to_idxs(s):
+  return map(lambda c: ord(c.upper()) - FIRST_CODE, s)
+
+def chars_to_idxs(chars):
+  return [c['keyCode'] - FIRST_CODE for c in chars]
+
+def encode_chars(chars):
   return [list(one_hot(c)) for c in chars if is_valid_char(c)]
 
 def filter_valid(obj):
@@ -18,6 +24,9 @@ def one_hot(char):
 
 def is_valid_char(char):
   return FIRST_CODE <= char['keyCode'] <= LAST_CODE
+
+def is_valid_idx(idx):
+  return FIRST_CODE <= idx <= LAST_CODE
 
 def release_time_diff(c1, c2):
   return min(c2['timeReleased'] - c1['timeReleased'], TIME_DIFF_THRESHOLD)
