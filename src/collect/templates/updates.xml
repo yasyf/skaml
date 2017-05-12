@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
   <app appid='{{ appid }}'>
-    <updatecheck codebase='https://{{ host }}/client/client.crx' version='{{ appversion }}' />
+    <updatecheck codebase='https://{{ host }}/static/client.crx' version='{{ appversion }}' />
   </app>
 </gupdate>

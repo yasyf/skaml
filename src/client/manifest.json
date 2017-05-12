@@ -20,5 +20,5 @@
     }
   ],
 
-  "update_url": "https://snarl.herokuapp.com/client/updates.xml",
+  "update_url": "https://snarl.herokuapp.com/client/updates.xml"
 }
