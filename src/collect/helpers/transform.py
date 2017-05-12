@@ -2,7 +2,7 @@ import numpy as np
 
 FIRST_CODE = 48
 LAST_CODE = 90
-ONE_HOT_SIZE = LAST_CODE - FIRST_CODE
+ONE_HOT_SIZE = LAST_CODE - FIRST_CODE + 1
 
 def one_hot(char):
   one_hot = np.zeros(ONE_HOT_SIZE)
