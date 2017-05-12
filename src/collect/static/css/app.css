@@ -5,3 +5,30 @@ pre {
   white-space: -o-pre-wrap;    /* Opera 7 */
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
+
+.word {
+  border: 1px solid black;
+  padding: 5px;
+  padding-bottom: 15px;
+  margin-bottom: 15px;
+}
+
+.char {
+  display: inline-block;
+  padding-right: 25px;
+}
+
+.delay-container {
+  display: inline-block;
+  position: absolute;
+}
+
+.delay {
+  font-size: smaller;
+  color: gray;
+  position: relative;
+  top: 15px;
+  left: -25px;
+  width: 20px;
+  text-align: center;
+}

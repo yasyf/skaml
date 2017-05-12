@@ -1,7 +1,7 @@
 from flask import render_template, session, jsonify, request, send_file
 from app import app
 from helpers.mongo import db
-from helpers.transform import transform, encode
+from helpers.transform import transform, encode, filter_valid
 from helpers.learn import mean_delays
 import uuid, io
 import numpy as np
@@ -25,6 +25,13 @@ def log_view():
 def admin_view():
   return render_template('admin.html', sessions=db.sessions.find({}))
 
+@app.route('/admin/<id>')
+def detail_view(id):
+  obj = db.sessions.find_one({'id': id})
+  words = filter_valid(obj)
+  _, delays = transform(obj)
+  return render_template('details.html', id=id, words=words, delays=delays)
+
 @app.route('/means/<id>/<password>')
 def mean_view(id, password):
   obj = db.sessions.find_one({'id': session['id']})
@@ -43,4 +50,4 @@ def export_view(id):
   output = io.BytesIO()
   np.savez_compressed(output, X=X, Y=Y)
   output.seek(0)
-  return send_file(output, as_attachment=True, attachment_filename='export.npz')
+  return send_file(output, as_attachment=True, attachment_filename='{}.npz'.format(id))
