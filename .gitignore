@@ -329,4 +329,4 @@ TSWLatexianTemp*
 # auto folder when using emacs and auctex
 /auto/*
 
-client/client.pem
+bin/
