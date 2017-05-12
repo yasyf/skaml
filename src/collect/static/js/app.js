@@ -9,6 +9,10 @@ class Character {
   release() {
     this.timeReleased = Date.now();
   }
+
+  isReleased() {
+    return this.timeReleased != undefined;
+  }
 }
 
 class Word {
@@ -38,6 +42,10 @@ function monitor(selector, onNewWord) {
       if (e.keyCode === SPACEBAR) {
         return;
       } else {
+        if (currentChar && !currentChar.isReleased()) {
+          currentChar.release();
+          currentWord.append(currentChar);
+        }
         currentChar = new Character(e.keyCode);
       }
     });
@@ -46,7 +54,7 @@ function monitor(selector, onNewWord) {
       if (e.keyCode === SPACEBAR) {
         onNewWord(currentWord);
         currentWord = new Word();
-      } else {
+      } else if (e.keyCode == currentChar.keyCode) {
         currentChar.release();
         currentWord.append(currentChar);
       }
