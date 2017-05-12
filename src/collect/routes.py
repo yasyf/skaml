@@ -35,8 +35,8 @@ def admin_view():
 def detail_view(id):
   obj = db.sessions.find_one({'id': id})
   words = filter_valid(obj)
-  _, delays = transform(obj)
-  return render_template('details.html', id=id, words=words, delays=delays, name=obj.get('name'))
+  _, delays, holds = transform(obj)
+  return render_template('details.html', id=id, words=words, holds=holds, delays=delays, name=obj.get('name'))
 
 @app.route('/means/<id>/<password>')
 def string_mean_view(id, password):
@@ -57,8 +57,8 @@ def encode_view():
 @app.route('/export/<id>')
 def export_view(id):
   obj = db.sessions.find_one({'id': id})
-  X, Y = transform(obj)
+  X, Y, Z = transform(obj)
   output = io.BytesIO()
-  np.savez_compressed(output, X=X, Y=Y)
+  np.savez_compressed(output, X=X, Y=Y, Z=Z)
   output.seek(0)
   return send_file(output, as_attachment=True, attachment_filename='{}.npz'.format(id))

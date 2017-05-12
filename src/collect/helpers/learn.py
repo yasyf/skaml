@@ -24,7 +24,7 @@ def mean_delays(X, Y):
   return means
 
 def idxs_delay(obj, idxs):
-  X, Y = transform(obj)
+  X, Y, _ = transform(obj)
   means = mean_delays(X, Y)
   return [round(means[idxs[i]][idx], 2) for i, idx in enumerate(idxs[1:])]
 

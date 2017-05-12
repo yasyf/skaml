@@ -24,7 +24,12 @@
     <div class="word">
       {% set word_loop = loop %}
       {% for char in word %}
-        <div class="char" data-keycode="{{char['keyCode']}}"></div>
+        <div class="char-container">
+          <div class="char" data-keycode="{{char['keyCode']}}"></div>
+        </div>
+        <div class="hold-container">
+          <div class="hold">{{holds[word_loop.index0][loop.index0] | int}}</div>
+        </div>
         {% if loop.index0 < (word|length - 1) %}
           <div class="delay-container">
             <div class="delay">{{delays[word_loop.index0][loop.index0] | int}}</div>

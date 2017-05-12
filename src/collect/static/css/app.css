@@ -8,27 +8,37 @@ pre {
 
 .word {
   border: 1px solid black;
-  padding: 5px;
+  padding: 20px;
   padding-bottom: 15px;
   margin-bottom: 15px;
 }
 
-.char {
+.char-container {
   display: inline-block;
   padding-right: 25px;
 }
 
-.delay-container {
+.delay-container, .hold-container {
   display: inline-block;
   position: absolute;
 }
 
-.delay {
+.delay, .hold {
   font-size: smaller;
-  color: gray;
   position: relative;
-  top: 15px;
-  left: -25px;
   width: 20px;
   text-align: center;
+}
+
+.delay {
+  color: gray;
+  top: 15px;
+  left: -27px;
+
+}
+
+.hold {
+  color: #D3D3D3;
+  top: -15px;
+  left: -45px;
 }

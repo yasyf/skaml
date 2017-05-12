@@ -4,6 +4,7 @@ FIRST_CODE = 48
 LAST_CODE = 90
 ONE_HOT_SIZE = LAST_CODE - FIRST_CODE + 1
 TIME_DIFF_THRESHOLD = 300
+HOLD_THRESHOLD = 150
 
 def str_to_idxs(s):
   return map(lambda c: ord(c.upper()) - FIRST_CODE, s)
@@ -31,23 +32,29 @@ def is_valid_idx(idx):
 def release_time_diff(c1, c2):
   return min(c2['timeReleased'] - c1['timeReleased'], TIME_DIFF_THRESHOLD)
 
+def time_held(c):
+  return min(c['timeReleased'] - c['timePressed'], HOLD_THRESHOLD)
+
 def transform(obj):
   words = filter_valid(obj)
   X = np.empty(len(words), dtype=np.object)
   Y = np.empty(len(words), dtype=np.object)
+  Z = np.empty(len(words), dtype=np.object)
   for i, word in enumerate(words):
     chars = [(j, x) for j, x in enumerate(word) if is_valid_char(x)]
     if not chars:
-      X[i] = np.empty(0)
-      Y[i] = np.empty(0)
+      X[i] = Y[i] = Z[i] = np.empty(0)
       continue
     x = np.empty((len(chars), ONE_HOT_SIZE), dtype=np.float)
-    y = np.empty((len(chars) - 1,), dtype=np.float)
+    y = np.empty(len(chars) - 1, dtype=np.float)
+    z = np.empty(len(chars), dtype=np.float)
     for k, (j, char) in enumerate(chars):
       x[k,:] = one_hot(char)
+      z[k] = time_held(char)
       if k == 0:
         continue
       y[k-1] = release_time_diff(word[j-1], char)
     X[i] = x
     Y[i] = y
-  return X, Y
+    Z[i] = z
+  return X, Y, Z
