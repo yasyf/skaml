@@ -30,10 +30,10 @@ def is_valid_idx(idx):
   return FIRST_CODE <= idx <= LAST_CODE
 
 def release_time_diff(c1, c2):
-  return min(c2['timeReleased'] - c1['timeReleased'], TIME_DIFF_THRESHOLD)
+  return min(max(0, c2['timeReleased'] - c1['timeReleased']), TIME_DIFF_THRESHOLD)
 
 def time_held(c):
-  return min(c['timeReleased'] - c['timePressed'], HOLD_THRESHOLD)
+  return min(max(0, c['timeReleased'] - c['timePressed']), HOLD_THRESHOLD)
 
 def transform(obj):
   words = filter_valid(obj)
