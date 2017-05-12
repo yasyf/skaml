@@ -4,6 +4,9 @@ FIRST_CODE = 48
 LAST_CODE = 90
 ONE_HOT_SIZE = LAST_CODE - FIRST_CODE + 1
 
+def encode(chars):
+  return [list(one_hot(c)) for c in chars if is_valid_char(c)]
+
 def one_hot(char):
   one_hot = np.zeros(ONE_HOT_SIZE)
   one_hot[char['keyCode'] - FIRST_CODE] = 1

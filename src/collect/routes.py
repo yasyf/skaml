@@ -1,7 +1,8 @@
 from flask import render_template, session, jsonify, request, send_file
 from app import app
 from helpers.mongo import db
-from helpers.transform import transform
+from helpers.transform import transform, encode
+from helpers.learn import mean_delays
 import uuid, io
 import numpy as np
 
@@ -23,6 +24,17 @@ def log_view():
 @app.route('/admin')
 def admin_view():
   return render_template('admin.html', sessions=db.sessions.find({}))
+
+@app.route('/means/<id>/<password>')
+def mean_view(id, password):
+  obj = db.sessions.find_one({'id': session['id']})
+  X, Y = transform(obj)
+  delays = mean_delays(X, Y)
+  return jsonify({'delays': delays})
+
+@app.route('/encode', methods=['POST'])
+def encode_view():
+  return jsonify({'encoded': encode(request.json['word']['characters'])})
 
 @app.route('/export/<id>')
 def export_view(id):
