@@ -1,9 +1,9 @@
-from flask import render_template, session, jsonify, request, send_file
+from flask import render_template, session, jsonify, request, send_file, redirect
 from app import app
 from helpers.mongo import db
 from helpers.transform import transform, encode_chars, filter_valid
 from helpers.learn import string_delay, chars_delay
-import uuid, io
+import uuid, io, os
 import numpy as np
 
 @app.before_request
@@ -16,6 +16,10 @@ def preprocess_request():
 @app.route('/')
 def index_view():
   return render_template('index.html')
+
+@app.route('/client')
+def client_view():
+  return redirect('https://chrome.google.com/webstore/detail/' + os.environ['APPID'])
 
 @app.route('/log', methods=['POST'])
 def log_view():
