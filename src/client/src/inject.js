@@ -29,7 +29,7 @@ function start() {
     if (!settings.name) {
       requestName();
     } else {
-      record(settings.name.toLowerCase());
+      record(settings.name.toLowerCase().replace(/\s/g, ""));
     }
   });
 }
