@@ -18,5 +18,5 @@
       ],
       "js": ["lib/jquery-3.2.1.min.js", "src/lib.js", "src/inject.js"]
     }
-  ],
+  ]
 }
