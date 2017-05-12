@@ -50,7 +50,7 @@ def encode_view():
 
 @app.route('/export/<id>')
 def export_view(id):
-  obj = db.sessions.find_one({'id': session['id']})
+  obj = db.sessions.find_one({'id': id})
   X, Y = transform(obj)
   output = io.BytesIO()
   np.savez_compressed(output, X=X, Y=Y)
