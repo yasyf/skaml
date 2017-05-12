@@ -3,13 +3,13 @@ const ENTER = 13;
 const BACKSPACE = 8;
 
 class Character {
-  constructor(keyCode) {
+  constructor(keyCode, timePressed) {
     this.keyCode = keyCode;
-    this.timePressed = Date.now();
+    this.timePressed = timePressed || Date.now();
   }
 
-  release() {
-    this.timeReleased = Date.now();
+  release(timeReleased) {
+    this.timeReleased = timeReleased || Date.now();
   }
 
   isReleased() {
@@ -52,7 +52,7 @@ function monitor(selector, onNewWord) {
           currentChar.release();
           currentWord.append(currentChar);
         }
-        currentChar = new Character(e.keyCode);
+        currentChar = new Character(e.keyCode, e.timeStamp);
       }
     });
 
@@ -61,7 +61,7 @@ function monitor(selector, onNewWord) {
         onNewWord(currentWord);
         currentWord = new Word();
       } else if (currentChar && e.keyCode == currentChar.keyCode) {
-        currentChar.release();
+        currentChar.release(e.timeStamp);
         currentWord.append(currentChar);
       }
     });
