@@ -8,8 +8,8 @@ import numpy as np
 
 @app.before_request
 def preprocess_request():
-  if request.args.get('id'):
-    session['id'] = request.args['id']
+  if request.args.get('session_id'):
+    session['id'] = request.args['session_id']
   if not session.get('id'):
     session['id'] = str(uuid.uuid4())
 
@@ -21,8 +21,8 @@ def index_view():
 def client_view():
   return redirect('https://chrome.google.com/webstore/detail/' + os.environ['APPID'])
 
-@app.route('/log', methods=['POST'])
-def log_view():
+@app.route('/words', methods=['POST'])
+def words_view():
   obj = {'words': request.json['words'], 'id': session['id'], 'name': request.args.get('name')}
   db.sessions.update({'id': session['id']},obj, upsert=True)
   return jsonify({'status': 'success'})

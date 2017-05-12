@@ -14,7 +14,7 @@ function record(name) {
     if (words.length === 0) {
       return;
     }
-    post(`https://snarl.herokuapp.com/log?id=${id}&name=${name}`, {words});
+    post(`https://snarl.herokuapp.com/words?session_id=${id}&name=${name}`, {words});
   }, 10000);
 
   monitor('body', word => words.push(word));
