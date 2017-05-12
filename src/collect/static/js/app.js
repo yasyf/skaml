@@ -36,7 +36,7 @@ function post(path, data) {
 }
 
 function isBreak(keyCode) {
-  return e.keyCode === SPACEBAR || e.keyCode === ENTER || e.keyCode === BACKSPACE;
+  return keyCode === SPACEBAR || keyCode === ENTER || keyCode === BACKSPACE;
 }
 
 function monitor(selector, onNewWord) {
