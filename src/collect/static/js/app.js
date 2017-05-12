@@ -1,4 +1,6 @@
 const SPACEBAR = 32;
+const ENTER = 13;
+const BACKSPACE = 8;
 
 class Character {
   constructor(keyCode) {
@@ -33,13 +35,17 @@ function post(path, data) {
   });
 }
 
+function isBreak(keyCode) {
+  return e.keyCode === SPACEBAR || e.keyCode === ENTER || e.keyCode === BACKSPACE;
+}
+
 function monitor(selector, onNewWord) {
   var currentWord = new Word();
   var currentChar;
 
   $(document).ready(() => {
     $(selector).keydown(e => {
-      if (e.keyCode === SPACEBAR) {
+      if (isBreak(e.keyCode)) {
         return;
       } else {
         if (currentChar && !currentChar.isReleased()) {
@@ -51,7 +57,7 @@ function monitor(selector, onNewWord) {
     });
 
     $(selector).keyup(e => {
-      if (e.keyCode === SPACEBAR) {
+      if (isBreak(e.keyCode)) {
         onNewWord(currentWord);
         currentWord = new Word();
       } else if (e.keyCode == currentChar.keyCode) {
