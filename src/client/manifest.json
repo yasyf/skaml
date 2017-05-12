@@ -3,7 +3,7 @@
 
   "name": "SNARL",
   "description": "A user study for 6.858.",
-  "version": "0.0.2",
+  "version": "0.0.3",
 
   "permissions": [
     "activeTab",
