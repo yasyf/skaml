@@ -22,8 +22,9 @@ def transform(obj):
   for i, word in enumerate(words):
     chars = [(j, x) for j, x in enumerate(word['characters']) if is_valid_char(x)]
     if not chars:
-     X[i] = np.empty(0)
-     Y[i] = np.empty(0)
+      X[i] = np.empty(0)
+      Y[i] = np.empty(0)
+      continue
     x = np.empty((len(chars), ONE_HOT_SIZE), dtype=np.float)
     y = np.empty((len(chars) - 1,), dtype=np.float)
     for k, (j, char) in enumerate(chars):
