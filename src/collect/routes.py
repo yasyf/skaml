@@ -3,7 +3,7 @@ from app import app
 from helpers.mongo import db
 from helpers.transform import transform, encode_chars, filter_valid
 from helpers.learn import string_delay, chars_delay
-import uuid, io, os
+import uuid, io
 import numpy as np
 
 @app.before_request
@@ -16,10 +16,6 @@ def preprocess_request():
 @app.route('/')
 def index_view():
   return render_template('index.html')
-
-@app.route('/client/updates.xml')
-def client_updates_view():
-  return render_template('updates.xml', appid=os.getenv('APPID'), appversion=os.getenv('APPVERSION'), host=os.getenv('HOST'))
 
 @app.route('/log', methods=['POST'])
 def log_view():
