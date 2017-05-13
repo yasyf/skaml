@@ -18,11 +18,11 @@ def train_mimic(username):
   print "Creating Model..."
   forward_input = Input(shape = (c.WINDOW_SIZE, c.ALPHABET_SIZE))
   forward_mask = Masking()(forward_input)
-  forward_rnn = SimpleRNN(c.VECTOR_SIZE)(forward_mask)
+  forward_rnn = SimpleRNN(c.S_VECTOR_SIZE)(forward_mask)
   forward_rnn = LeakyReLU()(forward_rnn)
   reverse_input = Input(shape = (c.WINDOW_SIZE, c.ALPHABET_SIZE))
   reverse_mask = Masking()(reverse_input)
-  reverse_rnn = SimpleRNN(c.VECTOR_SIZE)(reverse_mask)
+  reverse_rnn = SimpleRNN(c.S_VECTOR_SIZE)(reverse_mask)
   reverse_rnn = LeakyReLU()(reverse_rnn)
   x = Concatenate()([forward_rnn, reverse_rnn])
   x = Dropout(0.5)(x)
@@ -39,20 +39,30 @@ def train_mimic(username):
 
   input_files = glob.glob('Data/' + username + '/*.npz')
   out = f.filelist_to_mimic_data(input_files)
-  model.fit(x=out[:2], y=out[2], epochs=c.EPOCHS)
+
+  z = np.c_[out[0].reshape(len(out[0]), -1), out[1].reshape(len(out[1]), -1), out[2].reshape(len(out[2]), -1)]
+  np.random.shuffle(z)
+  x1 = z[:, :out[0].size//len(out[0])].reshape(out[0].shape)
+  x2 = z[:, out[0].size//len(out[0]):out[0].size//len(out[0]) + out[1].size//len(out[1])].reshape(out[1].shape)
+  y = z[:, out[0].size//len(out[0]) + out[1].size//len(out[1]):].reshape(out[2].shape)
+  model.fit(x=[x1, x2], y=y, epochs=c.EPOCHS, validation_split=0.1)
 
   print "Saving result..."
   model.save('models/' + username + '-mimic.h5')
 
 def train_distinguish(username):
   print "Creating Model..."
-  rnn_input = Input(shape = (c.MAX_WORD_SIZE, c.ALPHABET_SIZE + 1))
+  rnn_input = Input(shape = (c.MAX_WORD_SIZE, c.ALPHABET_SIZE + 2))
   rnn_mask = Masking()(rnn_input)
-  rnn = SimpleRNN(c.VECTOR_SIZE)(rnn_mask)
-  rnn = LeakyReLU()(rnn)
-  rnn = Dropout(0.5)(rnn)
-  output = Dense(50)(rnn)
-  output = LeakyReLU()(output)
+  rnn = SimpleRNN(c.D_VECTOR_SIZE, activation='relu')(rnn_mask)
+  # rnn = LeakyReLU()(rnn)
+  output = Dense(50, activation='relu')(rnn)
+  # output = LeakyReLU()(output)
+  output = Dropout(0.5)(output)
+  output = Dense(50, activation='relu')(rnn)
+  # output = LeakyReLU()(output)
+  output = Dense(20, activation='relu')(rnn)
+  # output = LeakyReLU()(output)
   output = Dense(2, activation='softmax')(output)
 
   model = Model(inputs=rnn_input, outputs=output)
@@ -63,18 +73,23 @@ def train_distinguish(username):
   model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])
 
   names = next(os.walk('./Data/'))[1]
-  x_data = np.zeros((0, c.MAX_WORD_SIZE, c.ALPHABET_SIZE + 1))
-  y_data = np.zeros((0, 2))
+  x = np.zeros((0, c.MAX_WORD_SIZE, c.ALPHABET_SIZE + 2))
+  y = np.zeros((0, 2))
   for name in names:
     input_files = glob.glob('Data/' + name + '/*.npz')
-    x = f.filelist_to_distinguish_data(input_files)
+    x_data = f.filelist_to_distinguish_data(input_files)
     if name == username:
-      y = np.repeat(np.array([[1, 0]]), len(x), axis=0)
+      y_data = np.repeat(np.array([[1, 0]]), len(x_data), axis=0)
     else:
-      y = np.repeat(np.array([[0, 1]]), len(x), axis=0)
-    x_data = np.append(x_data, x, axis = 0)
-    y_data = np.append(y_data, y, axis = 0)
-  model.fit(x=x_data, y=y_data, epochs=c.EPOCHS)
+      y_data = np.repeat(np.array([[0, 1]]), len(x_data), axis=0)
+    x = np.append(x, x_data, axis = 0)
+    y = np.append(y, y_data, axis = 0)
+  print np.mean(y, axis = 0)
+  z = np.c_[x.reshape(len(x), -1), y.reshape(len(y), -1)]
+  np.random.shuffle(z)
+  x2 = z[:, :x.size//len(x)].reshape(x.shape)
+  y2 = z[:, x.size//len(x):].reshape(y.shape)
+  model.fit(x=x2, y=y2, epochs=c.EPOCHS, validation_split=0.1)
 
   print "Saving result..."
   model.save('models/' + username + '-distinguish.h5')
