@@ -1,0 +1,105 @@
+\documentclass{amsart}
+\usepackage{amsmath, amssymb, amsthm}
+
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+\usepackage{enumitem}
+\usepackage{multicol,caption}
+\usepackage{graphicx}
+
+\newenvironment{Figure}
+  {\par\medskip\noindent\minipage{\linewidth}}
+  {\endminipage\par\medskip}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  mathescape
+}
+
+\usepackage{fancyhdr}
+
+\title{SKAML: Simulating Known Actors with Machine Learning}
+\author{Bryan~Cai, Yasyf~Mohamedali\\ \MakeLowercase{bcai, yasyf}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+~
+\vspace{7 cm}
+\maketitle
+~\\
+May 14, 2017
+\vfill
+
+\end{titlepage}
+
+\section{Abstract}
+Rise of biometric identification \\
+downside is hard to change if someone can mimic \\
+one metric current systems use is to look at how users type \\
+have a existing system from last year, show it is insecure \\
+develop models to fool system and simulate how the user types \\
+also build new model to distinguish between real user and other users \\
+structure of paper \\
+
+\begin{multicols*}{2}
+\section{Introduction}
+
+
+\section{Threat Model}
+
+
+\section{Approach}
+\subsection{Data Collection}
+
+\subsection{Models}
+For this project we trained several types of models. Our first model has the goal of mimicking how a user types. For each use when given a sequence of letters, the model outputs a sequence of delays between each consecutive pair of letters that mimics how the user would have typed those letters. It does this one pair at a time; the model takes as input $W$ letters preceding and $W$ letters following the pair we are predicting. For each of these $N$ letters, the model constructs a vector of length $V$, which represents the forward and backwards context in the word. Using these two vectors, one delay is produced. Iterating over every consecutive pair of letters gives the desired sequence of delays.
+
+
+
+The next model, the distinguisher, tries to achieve the opposite effect; given a sequence of letters and timings, it tries to guess whether the sequence was typed by the user. This model takes as input a sequence of vectors, where each vector encodes what letter was typed, how long the key was held down for, and the delay from the last keypress.
+
+
+
+\section{Implementation}
+
+
+\subsection{Models}
+The models were implemented in Python, using Keras with a TensorFlow backend. Characters were represented using one-hot vectors, and delays and hold times were measured in milliseconds. We first discuss the mimic model. This model takes two $W \times A$ matrices, where $W$ is the size of the context we consider and $A$ is the alphabet size. The first matrix represents the forward context, and the second matrix represents the backwards context. For example, if the word is "SECURITY," if we had a window size of 4 and we are trying to predict the delay between the "R" and the "I", the first matrix is the sequence of one-hot vectors representing ["C", "U", "R", "I"] and the second is the sequence of one-hot vectors representing ["R", "I", "T", "Y"]. If there are not enough letters, we pad the matrix with zero vectors. Each of these $W \times A$ matrices is fed through an RNN that produces the intermediate vector of length $V$. We then concatenate these two vectors and feed it through a fully connected layer with 50 nodes, and then then to a final output node. We used the mean absolute error as the loss function, and standard gradient descent as the optimizer.
+
+The distinguisher model takes as input a matrix of size $L \times (A + 2)$, where $L$ is the maximum word length we allow, which is set to 15 but can be set higher in the future if necessary. Each row of the matrix consists of the one-hot vector of length $A$, with the keydown time and delay time appended. This is fed through one RNN layer, then through several dense layers, culminating in an final layer with 2 outputs and softmax activation.
+
+
+
+
+
+
+
+\section{Conclusion}
+Something here
+
+
+\end{multicols*}
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\grid
