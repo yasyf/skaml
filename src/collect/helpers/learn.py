@@ -1,4 +1,4 @@
-from transform import ONE_HOT_SIZE, transform, str_to_idxs, chars_to_idxs
+from transform import ONE_HOT_SIZE, transform, str_to_idxs, chars_to_idxs, one_hot_to_ind
 import numpy as np
 import sys, os
 
@@ -10,9 +10,6 @@ def evaluate(username, password):
     return False, 0
   prob = predict.predict_distinguish(username, *transform({'words': [password]}))
   return bool(np.argmax(prob) == 0), round(prob[0], 2)
-
-def one_hot_to_ind(x):
-  return np.flatnonzero(x)[0]
 
 def mean_delays(X, Y):
   means = np.zeros((ONE_HOT_SIZE, ONE_HOT_SIZE))

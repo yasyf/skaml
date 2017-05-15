@@ -9,6 +9,9 @@ HOLD_THRESHOLD = 150
 def str_to_idxs(s):
   return map(lambda c: ord(c.upper()) - FIRST_CODE, s)
 
+def idxs_to_str(idxs):
+  return ''.join(map(lambda i: chr(i + FIRST_CODE).lower(), idxs))
+
 def chars_to_idxs(chars):
   return [c['keyCode'] - FIRST_CODE for c in chars]
 
@@ -17,6 +20,9 @@ def encode_chars(chars):
 
 def filter_valid(obj):
   return [[c for c in w['characters'] if is_valid_char(c)] for w in obj['words'] if w['characters']]
+
+def one_hot_to_ind(x):
+  return np.flatnonzero(x)[0]
 
 def one_hot(char):
   one_hot = np.zeros(ONE_HOT_SIZE)
