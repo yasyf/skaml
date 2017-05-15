@@ -6,6 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__
 import predict
 
 def evaluate(username, password):
+  if not password['characters']:
+    return False, 0
   prob = predict.predict_distinguish(username, *transform({'words': [password]}))
   return bool(np.argmax(prob) == 0), round(prob[0], 2)
 
