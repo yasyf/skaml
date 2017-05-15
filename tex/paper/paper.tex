@@ -1,8 +1,10 @@
 \documentclass{amsart}
-\usepackage{amsmath, amssymb, amsthm, hyperref, enumitem, multicol, caption, graphicx}
+\usepackage{amsmath, amssymb, amsthm, hyperref, enumitem, multicol, caption, graphicx, float}
 
 \usepackage[english]{babel}
 \usepackage[autostyle, english=american]{csquotes}
+
+\graphicspath{ {images/} }
 
 \setlength{\parskip}{\baselineskip}
 
@@ -67,7 +69,11 @@ In order to collect sufficient typing data from the users that agreed to partici
 
 The first is a Google Docs look-alike \footnote{https://snarl.herokuapp.com}, which imitates a well-known service in a phishing-style attempt to convince a complacent user to type on the page. We overlayed a text box on a webpage containing the CSS from a Google Doc we created, allowing the user to type as if this were the application they are so familiar with. We implemented a small client-side library in JavaScript which listens for the \texttt{KeyDown} and \texttt{KeyUp} DOM events emitted from the textbox, so as to record the length of time each key is held for and the delay between key presses, as well as the actual characters being typed. This data is stored in a local buffer and is periodically uploaded to our servers, where a a Flask app records the logged objects to a MongoDB instance, tagged with a unique identifier for the user in question.
 
-\textbf{TODO: ADD IMAGE OF GOOGLE DOCS FAKE}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth]{gdocs}
+  \caption{Google Docs look-alike}
+\end{figure}
 
 The second technique we developed for data collection is a key-logging Google Chrome extension \footnote{https://snarl.herokuapp.com/client}. While the data quality from a document editor was vastly superior to the flow of data from casual bursts of typing in a browser, our models demanded as much data as we could possibly collect. Thus we augmented our corpus by creating an extension that injects a script into every web page, using the same library as before. We asked participants to install the extension and made them aware of the implications; our proof-of-concept was installed with consent but could just as easily be installed through less transparent means by a bad actor.
 
@@ -88,7 +94,11 @@ The next model, the distinguisher, tries to achieve the opposite effect; given a
 
 We built a Python backend in Flask with an API to support our collection and processing. This included routines to receive JavaScript objects with \texttt{KeyCode}s and translate them to one-hot vectors which could be fed into our neural models. In order to aid with supervision of the collection process, we built several tools and dashboards to explore the data being collected.
 
-\textbf{TODO: ADD IMAGE OF DEBUGGING DASHBOARD}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth]{admin}
+  \caption{Data Debgging Dashboard}
+\end{figure}
 
 \subsection{Models}
 \subsubsection{Means Model}
