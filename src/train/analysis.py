@@ -87,8 +87,6 @@ def user_mean_delays(username):
 
   counts[np.where(counts == 0)] = 1
   means /= counts
-  mean = means.ravel()[np.flatnonzero(means)].mean()
-  # means[np.where(means == 0)] = mean
   return means, counts
 
 def sort_timings(username):
