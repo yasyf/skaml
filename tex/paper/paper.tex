@@ -49,12 +49,22 @@ structure of paper \\
 \begin{multicols*}{2}
 \section{Introduction}
 
+The past few years have seen several attempts to increase security in password-based authentication systems by adding secondary factors derived from biometric patterns in user behavior. Examples of this include Yang and Haddad's \textit{punchTimeAuth} \footnote{http://css.csail.mit.edu/6.858/2017/projects/yangjy-ddh.pdf} and the commercial product being developed by UnifyID \footnote{https://unify.id/}. However, there has not been much focus on the barrier this presents to attackers who are capable of mimicking their targets, particularly in the age of commodity cloud hardware and effective deep learning methods.
+
+We present an exploration into the pitfalls of relying on input-delay-based biometric data as a second factor for authentication, using \textit{punchTimeAuth} as our standard for comparison. We show that the model introduces a prohibively high number false negatives when exposed to real-world usage. Furthermore, we present serveral adversarial models which can successfully impersonate a user typing their password, trained on background typing data that need not include the password itself. In order to collect this data, we built two collection mediums: a Google Documents look-alike and an extension for Google Chrome. We collect which keys are pressed, the length of time each is held for, and the delay between each pair of keys. Finally, we present a novel neural model for attempting to distinguish users based on the information we collect, along with some conclusions and observations about this source of data as a second factor for security.
 
 \section{Threat Model}
 
+Our exploration focuses specifically on the systems which analyze the delays between a user's keypresses while she is typing her password. We assume that the system in question has been previously trained with multiple samples of the user's typing patterns. Our tests were against the seventh quantile-based \textit{punchTimeAuth}. We assume the role of an adversary which has managed to obtain the password of a user (such as through a database breach, phishing scam, or cross-site scripting exploit), and is attempting to gain access to a system employing the second factor of security described above. We further assume that the adversary has time to build tools as we did to collect typing data on their target. Importantly, we do not require the adversary to ever witness their target typing the password in question.
 
 \section{Approach}
 \subsection{Data Collection}
+
+In order to collect sufficient typing data from the users that agreed to participate in our exploration, we built two interactive tools. In both cases, we solicited complacent users by inviting them to use our applications, relying on their lack of careful inspection when receiving a link from someone they trust.
+
+The first is a Google Docs look-alike, which imitates a well-known service in a phishing-style attempt to convince a complacent user to type on the page. We overlayed a text box on a webpage containing the CSS from a Google Doc we created, allowing the user to type as if this were the application they are so familiar with. We implemented a small client-side library in JavaScript which listens for the \texttt{KeyDown} and \texttt{KeyUp} DOM events emitted from the textbox, so as to record the length of time each key is held for and the delay between key presses, as well as the actual characters being typed. This data is stored in a local buffer and is periodically uploaded to our servers, where a a Flask app records the logged objects to a MongoDB instance, tagged with a unique identifier for the user in question.
+
+
 
 \subsection{Models}
 For this project we trained several types of models. Our first model has the goal of mimicking how a user types. For each use when given a sequence of letters, the model outputs a sequence of delays between each consecutive pair of letters that mimics how the user would have typed those letters. It does this one pair at a time; the model takes as input $W$ letters preceding and $W$ letters following the pair we are predicting. For each of these $N$ letters, the model constructs a vector of length $V$, which represents the forward and backwards context in the word. Using these two vectors, one delay is produced. Iterating over every consecutive pair of letters gives the desired sequence of delays.
