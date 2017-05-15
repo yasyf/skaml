@@ -1,18 +1,18 @@
-\documentclass{amsart}
-\usepackage{amsmath, amssymb, amsthm, hyperref, enumitem, multicol, caption, graphicx, float}
+\documentclass[9pt,journal]{IEEEtran}
+\usepackage{graphicx,float,amsmath,amssymb,url,subcaption,array,fancyhdr}
 
 \usepackage[english]{babel}
 \usepackage[autostyle, english=american]{csquotes}
+\usepackage[unicode]{hyperref}
 
 \graphicspath{ {images/} }
 
 \setlength{\parskip}{\baselineskip}
 
-\MakeOuterQuote{"}
+\usepackage[backend=biber]{biblatex}
+\bibliography{paper}
 
-\newenvironment{Figure}
-  {\par\medskip\noindent\minipage{\linewidth}}
-  {\endminipage\par\medskip}
+\MakeOuterQuote{"}
 
 \usepackage[margin=1in]{geometry}
 \usepackage{listings}
@@ -21,37 +21,24 @@
   mathescape
 }
 
-\usepackage{fancyhdr}
-
-\title{SNARL: Simulating Known Actors with Machine Learning}
-\author{Bryan~Cai, Yasyf~Mohamedali\\ \MakeLowercase{bcai, yasyf}}
+\title{SNARL:\\Simulating Known Actors with Machine Learning}
+\author{\IEEEauthorblockN{Bryan Cai, Yasyf Mohamedali}\\\IEEEauthorblockA{\{bcai, yasyf\}@mit.edu}}
 
 \begin{document}
 
-\begin{titlepage}
-\centering
-~
-\vspace{7 cm}
 \maketitle
-~\\
-May 15, 2017
-\vfill
-
-\end{titlepage}
 
 \section{Abstract}
+
 We present SNARL, a suite of tools that is able to simulate a user's typing pattern with the goal of exposing the  vulnerabilities of new biometric based identification techniques. Researchers have known for many years that password based verifcation systems are insecure, in part due to security holes in applications, and in part due to users (eg password reuse). In an effort to bolster security, some applications leverage additional data; we are particularly interested in the merits and drawbacks of biometric data. Biometric identifications schemes are in some aspects very secure, because a person can often be uniquely identified by some combination of biometric factors. On the other hand, if somehow this information were to be stolen, akin to a password being leaked, it is nearly impossible to change, since they are often either physical traits that exist from birth or habits developed over many years. Our paper demonstrates a system that is able to rapidly learn and simulate user password typing habits, and suggests that keypress timings should only be used as an inexpensive technique that does not significantly boost security.
 
-
-
-\begin{multicols*}{2}
 \section{Introduction}
 
-The past few years have seen several attempts to increase security in password-based authentication systems by adding secondary factors derived from biometric patterns in user behavior. Examples of this include Yang and Haddad's \texttt{punchTimeAuth} \footnote{http://css.csail.mit.edu/6.858/2017/projects/yangjy-ddh.pdf} and the commercial product being developed by UnifyID \footnote{https://unify.id}. However, there has not been much focus on the barrier this presents to attackers who are capable of mimicking their targets, particularly in the age of commodity cloud hardware and effective deep learning methods.
+The past few years have seen several attempts to increase security in password-based authentication systems by adding secondary factors derived from biometric patterns in user behavior. Examples of this include Yang and Haddad's \texttt{punchTimeAuth} \cite{punchtimeauth} and the commercial product being developed by UnifyID \cite{unifyid}. However, there has not been much focus on the barrier this presents to attackers who are capable of mimicking their targets, particularly in the age of commodity cloud hardware and effective deep learning methods.
 
 We present an exploration into the pitfalls of relying on input-delay-based biometric data as a second factor for authentication, using \texttt{punchTimeAuth} as our standard for comparison. We show that the model introduces a prohibively high number false negatives when exposed to real-world usage. Furthermore, we present serveral adversarial models which can successfully impersonate a user typing their password, trained on background typing data that need not include the password itself. In order to collect this data, we built two collection mediums: a Google Documents look-alike and an extension for Google Chrome. We collect which keys are pressed, the length of time each is held for, and the delay between each pair of keys. Finally, we present a novel neural model for attempting to distinguish users based on the information we collect, along with some conclusions and observations about this source of data as a second factor for security.
 
-All of the code for this paper can be found at \url{https://github.com/yasyf/skaml}.
+The code for the systems described in this paper can be found at \url{https://github.com/yasyf/snarl}.
 
 \section{Threat Model}
 
@@ -62,7 +49,7 @@ Our exploration focuses specifically on the systems which analyze the delays bet
 
 In order to collect sufficient typing data from the users that agreed to participate in our exploration, we built two interactive tools. In both cases, we solicited complacent users by inviting them to use our applications, relying on their lack of careful inspection when receiving a link from someone they trust.
 
-The first is a Google Docs look-alike \footnote{https://snarl.herokuapp.com}, which imitates a well-known service in a phishing-style attempt to convince a complacent user to type on the page. We overlayed a text box on a webpage containing the CSS from a Google Doc we created, allowing the user to type as if this were the application they are so familiar with. We implemented a small client-side library in JavaScript which listens for the \texttt{KeyDown} and \texttt{KeyUp} DOM events emitted from the textbox, so as to record the length of time each key is held for and the delay between key presses, as well as the actual characters being typed. This data is stored in a local buffer and is periodically uploaded to our servers, where a a Flask app records the logged objects to a MongoDB instance, tagged with a unique identifier for the user in question.
+The first is a Google Docs look-alike \cite{gdocs}, which imitates a well-known service in a phishing-style attempt to convince a complacent user to type on the page. We overlayed a text box on a webpage containing the CSS from a Google Doc we created, allowing the user to type as if this were the application they are so familiar with. We implemented a small client-side library in JavaScript which listens for the \texttt{KeyDown} and \texttt{KeyUp} DOM events emitted from the textbox, so as to record the length of time each key is held for and the delay between key presses, as well as the actual characters being typed. This data is stored in a local buffer and is periodically uploaded to our servers, where a a Flask app records the logged objects to a MongoDB instance, tagged with a unique identifier for the user in question.
 
 \begin{figure}[H]
   \centering
@@ -70,7 +57,7 @@ The first is a Google Docs look-alike \footnote{https://snarl.herokuapp.com}, wh
   \caption{Google Docs look-alike}
 \end{figure}
 
-The second technique we developed for data collection is a key-logging Google Chrome extension \footnote{https://snarl.herokuapp.com/client}. While the data quality from a document editor was vastly superior to the flow of data from casual bursts of typing in a browser, our models demanded as much data as we could possibly collect. Thus we augmented our corpus by creating an extension that injects a script into every web page, using the same library as before. We asked participants to install the extension and made them aware of the implications; our proof-of-concept was installed with consent but could just as easily be installed through less transparent means by a bad actor.
+The second technique we developed for data collection is a key-logging Google Chrome extension \cite{extension}. While the data quality from a document editor was vastly superior to the flow of data from casual bursts of typing in a browser, our models demanded as much data as we could possibly collect. Thus we augmented our corpus by creating an extension that injects a script into every web page, using the same library as before. We asked participants to install the extension and made them aware of the implications; our proof-of-concept was installed with consent but could just as easily be installed through less transparent means by a bad actor.
 
 The combined results of these two methods resulted in a data set of approximately $25000$ character pairs across several users.
 
@@ -122,7 +109,7 @@ As we will discuss later, the laborious and manual process of training systems l
 
 Our neural models for mimicking user input achieved a lower success rate on the task of imitating users to \texttt{punchTimeAuth}, succeeding on about 70\% of passwords. However, there are several possible explanations. We believe that the most likely reason is because the \texttt{punchTimeAuth} is based on deviation from the median for each keypress, which the means model learns more directly. Secondly, our neural model may be overfitting to the data, and we believe results would improve if there was more data, collected over a longer span of time, to train on.
 
-The distinguisher model had a validation accuracy of 80\% to 85\%, which indicates that there is an appreciable difference between how distinct users type; however, it is clearly also not enought to uniquely identify a user. Again, this analysis suffers from low sample size, as we were only able to analyze 4 user's typing habits.
+The distinguisher model had a validation accuracy of 80\% to 85\%, which indicates that there is an appreciable difference between how distinct users type; however, it is clearly also not enought to uniquely identify a user. Again, this analysis suffers from low sample size, as we were only able to analyze four user's typing habits.
 
 \section{Discussion}
 
@@ -138,17 +125,7 @@ On the data collection front, we experienced expected challenges including a lac
 
 SNARL has demonstrated that timing-enhanced password authentication has approximately the same level of security as a password-only scheme, given 10,000 to 15,000 characters of data per user, which is about 4 pages of typed words. We successfully defeated the scheme presented in \texttt{punchTimeAuth} using both a very simple means model and a neural model. However, our distinguisher models show that there is differentiation in user typing habits, and typing patterns could be aggregated with other data to effectively enhance security.
 
-
-\end{multicols*}
-
-\begin{thebibliography}{99}
-
-\bibitem{LSTM}  Zachary C. Lipton, David C. Kale, Charles Elkan, Randall Wetzell {\em Learning to Diagnose with LSTM Recurrent
-Neural Networks}, arXiv:1511.03677, [2016].
-\end{thebibliography}
+\pagebreak
+\printbibliography
 
 \end{document}
-
-\end{document}
-
-\grid
