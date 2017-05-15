@@ -49,7 +49,9 @@ Our exploration focuses specifically on the systems which analyze the delays bet
 
 In order to collect sufficient typing data from the users that agreed to participate in our exploration, we built two interactive tools. In both cases, we solicited complacent users by inviting them to use our applications, relying on their lack of careful inspection when receiving a link from someone they trust.
 
-The first is a Google Docs look-alike \cite{gdocs}, which imitates a well-known service in a phishing-style attempt to convince a complacent user to type on the page. We overlayed a text box on a webpage containing the CSS from a Google Doc we created, allowing the user to type as if this were the application they are so familiar with. We implemented a small client-side library in JavaScript which listens for the \texttt{KeyDown} and \texttt{KeyUp} DOM events emitted from the textbox, so as to record the length of time each key is held for and the delay between key presses, as well as the actual characters being typed. This data is stored in a local buffer and is periodically uploaded to our servers, where a a Flask app records the logged objects to a MongoDB instance, tagged with a unique identifier for the user in question.
+The first is a Google Docs look-alike \cite{gdocs}, which imitates a well-known service in a phishing-style attempt to convince a complacent user to type on the page. We overlayed a text box on a webpage containing the CSS from a Google Doc we created, allowing the user to type as if this were the application they are so familiar with.
+
+We implemented a small client-side library in JavaScript which listens for the \texttt{KeyDown} and \texttt{KeyUp} DOM events emitted from the textbox, so as to record the length of time each key is held for and the delay between key presses, as well as the actual characters being typed. This data is stored in a local buffer and is periodically uploaded to our servers, where a a Flask app records the logged objects to a MongoDB instance, tagged with a unique identifier for the user in question.
 
 \begin{figure}[H]
   \centering
@@ -96,7 +98,11 @@ Let $y_u$ be the flattened length-$n$ vector of measurements $(c_1, c_2, \texttt
 \]
 
 \subsubsection{Neural Models}
-The neural models were implemented in Python, using Keras with a TensorFlow backend. Characters were represented using one-hot vectors, and delays and hold times were measured in milliseconds. We first discuss the mimic model. This model takes two $W \times A$ matrices, where $W$ is the size of the context we consider and $A$ is the alphabet size. The first matrix represents the forward context, and the second matrix represents the backwards context. For example, if the word is "SECURITY," if we had a window size of 4 and we are trying to predict the delay between the "R" and the "I", the first matrix is the sequence of one-hot vectors representing ["C", "U", "R", "I"] and the second is the sequence of one-hot vectors representing ["R", "I", "T", "Y"]. If there are not enough letters, we pad the matrix with zero vectors. Each of these $W \times A$ matrices is fed through an RNN that produces the intermediate vector of length $V$. We then concatenate these two vectors and feed it through a fully connected layer with 50 nodes, and then then to a final output node. We used the mean absolute error as the loss function, and standard gradient descent as the optimizer.
+The neural models were implemented in Python, using Keras with a TensorFlow backend. Characters were represented using one-hot vectors, and delays and hold times were measured in milliseconds. We first discuss the mimic model. This model takes two $W \times A$ matrices, where $W$ is the size of the context we consider and $A$ is the alphabet size. The first matrix represents the forward context, and the second matrix represents the backwards context.
+
+For example, if the word is "SECURITY," if we had a window size of 4 and we are trying to predict the delay between the "R" and the "I", the first matrix is the sequence of one-hot vectors representing ["C", "U", "R", "I"] and the second is the sequence of one-hot vectors representing ["R", "I", "T", "Y"]. If there are not enough letters, we pad the matrix with zero vectors. Each of these $W \times A$ matrices is fed through an RNN that produces the intermediate vector of length $V$. We then concatenate these two vectors and feed it through a fully connected layer with 50 nodes, and then then to a final output node.
+
+We used the mean absolute error as the loss function, and standard gradient descent as the optimizer.
 
 The distinguisher model takes as input a matrix of size $L \times (A + 2)$, where $L$ is the maximum word length we allow, which is set to 15 but can be set higher in the future if necessary. Each row of the matrix consists of the one-hot vector of length $A$, with the keydown time and delay time appended. This is fed through one RNN layer, then through several dense layers, culminating in an final layer with 2 outputs and softmax activation.
 
@@ -117,9 +123,23 @@ We faced serval challenges in collecting data and implementing the models for th
 
 Another particularly interesting challenge occured in the client-side data collection library we authored. Detecting lengths of key presses in addition to delays meant we could not simply listen for \texttt{KeyPress} events, and put us at the mercy of the JavaScript event loop scheduler. We spent nontrivial amount of time post-processing the stream of events we received to piece together the sequence of user key presses.
 
-On the data collection front, we experienced expected challenges including a lack of willing study participants, and foreign scripts interfering with our injected collection routines in the browser.
+On the data collection front, we experienced expected challenges including a lack of willing study participants, and foreign scripts interfering with our injected collection routines in the browser. The latter resulted in the data collected from our Chrome extension being very noisy and hard to use.
 
-\textbf{TODO: KEYBOARD DISTANCE THING}
+As part of our analysis of user typing data, we made some interesting observations with regards to the delays between typing keys on a standard QWERTY keyboard. Our initial hypothesis was that keys which are farther apart on the standard keyboard would experience the greatest delay. However, as seen in Figure \ref{fig:keyboard}, this is not quite the case.
+
+Instead, we see a pattern where keys that are typed by the same finger (on either side of the keyboard) follow each other in quick succession, with the distance between keys not rendering much information. The exception to this is the peculiarity of typing the same key multiple times. It appears that users consistently slow down when repeating a key.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.4\textwidth]{keyboard}
+  \caption{Keyboard Distance vs Mean Delay}
+  \label{fig:keyboard}
+\end{figure}
+
+
+\section{Future Work}
+
+Though we have shown that there is significant differentiation between user's typing patterns.
 
 \section{Conclusion}
 
