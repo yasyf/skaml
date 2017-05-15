@@ -23,7 +23,7 @@
 
 \usepackage{fancyhdr}
 
-\title{SKAML: Simulating Known Actors with Machine Learning}
+\title{SNARL: Simulating Known Actors with Machine Learning}
 \author{Bryan~Cai, Yasyf~Mohamedali\\ \MakeLowercase{bcai, yasyf}}
 
 \begin{document}
@@ -34,20 +34,15 @@
 \vspace{7 cm}
 \maketitle
 ~\\
-May 14, 2017
+May 15, 2017
 \vfill
 
 \end{titlepage}
 
 \section{Abstract}
-\textbf{TODO: ABSTRACT}
-Rise of biometric identification \\
-downside is hard to change if someone can mimic \\
-one metric current systems use is to look at how users type \\
-have a existing system from last year, show it is insecure \\
-develop models to fool system and simulate how the user types \\
-also build new model to distinguish between real user and other users \\
-structure of paper \\
+We present SNARL, a suite of tools that is able to simulate a user's typing pattern with the goal of exposing the  vulnerabilities of new biometric based identification techniques. Researchers have known for many years that password based verifcation systems are insecure, in part due to security holes in applications, and in part due to users (eg password reuse). In an effort to bolster security, some applications leverage additional data; we are particularly interested in the merits and drawbacks of biometric data. Biometric identifications schemes are in some aspects very secure, because a person can often be uniquely identified by some combination of biometric factors. On the other hand, if somehow this information were to be stolen, akin to a password being leaked, it is nearly impossible to change, since they are often either physical traits that exist from birth or habits developed over many years. Our paper demonstrates a system that is able to rapidly learn and simulate user password typing habits, and suggests that keypress timings should only be used as an inexpensive technique that does not significantly boost security.
+
+
 
 \begin{multicols*}{2}
 \section{Introduction}
@@ -125,7 +120,9 @@ As we will discuss later, the laborious and manual process of training systems l
 
 \subsection{Neural Models}
 
-\textbf{TODO: RESULTS}
+Our neural models for mimicking user input achieved a lower success rate on the task of imitating users to \texttt{punchTimeAuth}, succeeding on about 70\% of passwords. However, there are several possible explanations. We believe that the most likely reason is because the \texttt{punchTimeAuth} is based on deviation from the median for each keypress, which the means model learns more directly. Secondly, our neural model may be overfitting to the data, and we believe results would improve if there was more data, collected over a longer span of time, to train on.
+
+The distinguisher model had a validation accuracy of 80\% to 85\%, which indicates that there is an appreciable difference between how distinct users type; however, it is clearly also not enought to uniquely identify a user. Again, this analysis suffers from low sample size, as we were only able to analyze 4 user's typing habits.
 
 \section{Discussion}
 
@@ -139,11 +136,19 @@ On the data collection front, we experienced expected challenges including a lac
 
 \section{Conclusion}
 
-\textbf{TODO: CONCLUSION}
+SNARL has demonstrated that timing-enhanced password authentication has approximately the same level of security as a password-only scheme, given 10,000 to 15,000 characters of data per user, which is about 4 pages of typed words. We successfully defeated the scheme presented in \texttt{punchTimeAuth} using both a very simple means model and a neural model. However, our distinguisher models show that there is differentiation in user typing habits, and typing patterns could be aggregated with other data to effectively enhance security.
 
-\textbf{TODO: CITATIONS}
 
 \end{multicols*}
+
+\begin{thebibliography}{99}
+
+\bibitem{LSTM}  Zachary C. Lipton, David C. Kale, Charles Elkan, Randall Wetzell {\em Learning to Diagnose with LSTM Recurrent
+Neural Networks}, arXiv:1511.03677, [2016].
+\end{thebibliography}
+
+\end{document}
+
 \end{document}
 
 \grid
