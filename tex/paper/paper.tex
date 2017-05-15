@@ -71,7 +71,7 @@ The first is a Google Docs look-alike \footnote{https://snarl.herokuapp.com}, wh
 
 The second technique we developed for data collection is a key-logging Google Chrome extension \footnote{https://snarl.herokuapp.com/client}. While the data quality from a document editor was vastly superior to the flow of data from casual bursts of typing in a browser, our models demanded as much data as we could possibly collect. Thus we augmented our corpus by creating an extension that injects a script into every web page, using the same library as before. We asked participants to install the extension and made them aware of the implications; our proof-of-concept was installed with consent but could just as easily be installed through less transparent means by a bad actor.
 
-\textbf{TODO: TALK ABOUT HOW MUCH DATA WE COLLECTED}
+The combined results of these two methods resulted in a data set of approximately $25000$ character pairs across several users.
 
 \subsection{Models}
 \subsubsection{Means Model}
@@ -111,7 +111,7 @@ The distinguisher model takes as input a matrix of size $L \times (A + 2)$, wher
 \section{Results}
 \subsection{Means Model}
 
-As we will discuss later, the laborious and manual process of training systems like \texttt{punchTimeAuth} left us in the difficult position of not having many options for automated testing. Thus, our testing efforts were the result of us randomly sampling words and attempting to have our model type them in the fashion of the training user. The same user would train the security system by using that word as their password for a new account, and we would inject JavaScript to simulate our predicted delays at a login screen. Using this method, our means model was able to successfully imitate several users 90\% of the time.
+As we will discuss later, the laborious and manual process of training systems like \texttt{punchTimeAuth} left us in the difficult position of not having many options for automated testing. Thus, our testing efforts were the result of us randomly sampling words and attempting to have our model type them in the fashion of the training user. The same user would train the security system by using that word as their password for a new account, and we would inject JavaScript to simulate our predicted delays at a login screen. Using this method, our means model was able to successfully imitate several users 90\% of the time. This result is somewhat surprising, given that we did not expect users to necessarily type in a document editor the same way they type a familiar password.
 
 \subsection{Neural Models}
 
@@ -119,7 +119,11 @@ As we will discuss later, the laborious and manual process of training systems l
 
 \section{Discussion}
 
-\textbf{TODO: CHALLENGES}
+We faced serval challenges in collecting data and implementing the models for this exploration. One of the largest barriers to rigorous results was the fact that the systems we attempted to break all require significant effort to train. Concretely, in order to evaluate an imitation of a user's typing of a specific password, that user must train the security system on how she types that password. This high barrier to the end user is a shortcoming of the string-specific model used in \texttt{punchTimeAuth}, and something we tried to address with our generalized neural distinguisher. However, as we discovered, simple typing timing and language context do not provide sufficient information to produce a generalized model of a user's biometric profile.
+
+Another particularly interesting challenge occured in the client-side data collection library we authored. Detecting lengths of key presses in addition to delays meant we could not simply listen for \texttt{KeyPress} events, and put us at the mercy of the JavaScript event loop scheduler. We spent nontrivial amount of time post-processing the stream of events we received to piece together the sequence of user key presses.
+
+On the data collection front, we experienced expected challenges including a lack of willing study participants, and foreign scripts interfering with our injected collection routines in the browser.
 
 \section{Conclusion}
 
