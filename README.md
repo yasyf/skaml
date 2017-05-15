@@ -12,4 +12,4 @@ The proposal for this project can be found [here](tex/proposal/proposal.pdf).
 
 ## Paper
 
-The final paper for this project can be found [here](tex/report/report.pdf).
+The final paper for this project can be found [here](tex/paper/paper.pdf).
