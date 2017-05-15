@@ -139,13 +139,12 @@ Instead, we see a pattern where keys that are typed by the same finger (on eithe
 
 \section{Future Work}
 
-Though we have shown that there is significant differentiation between user's typing patterns.
+We have shown that there is significant differentiation between user's typing patterns, as evidenced by the results of our distinguisher model. However, it is not clear to the authors that there exists sufficient entropy in this data to uniquely identify a user in a large system. Certainly, timing delays and key hold times do not render a model that should be used as a second factor alone. We would like to explore how the signal from such a model can be used a heuristic for other biometric factors, as well as whether or not such signals could be aggregated to provide a secure authenication system.
 
 \section{Conclusion}
 
 SNARL has demonstrated that timing-enhanced password authentication has approximately the same level of security as a password-only scheme, given 10,000 to 15,000 characters of data per user, which is about 4 pages of typed words. We successfully defeated the scheme presented in \texttt{punchTimeAuth} using both a very simple means model and a neural model. However, our distinguisher models show that there is differentiation in user typing habits, and typing patterns could be aggregated with other data to effectively enhance security.
 
-\pagebreak
 \printbibliography
 
 \end{document}
