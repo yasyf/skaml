@@ -2,7 +2,7 @@ from transform import ONE_HOT_SIZE, transform, str_to_idxs, chars_to_idxs
 import numpy as np
 import sys, os
 
-sys.path.append(os.path.abspath(os.path.join(os.pardir, 'train')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, os.pardir, 'train')))
 import predict
 
 def evaluate(username, password):
