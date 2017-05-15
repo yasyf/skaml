@@ -5,14 +5,10 @@ import constants as c
 import functions as f
 import numpy as np
 
-from keras.models import Sequential, Model
+from keras.models import Model
 from keras.layers import SimpleRNN
-from keras.layers import Activation, Dropout, Flatten, Dense, Concatenate, Masking, LeakyReLU
+from keras.layers import Dropout, Dense, Concatenate, Masking, LeakyReLU
 from keras.layers import Input
-from keras.optimizers import Nadam, SGD
-from keras.callbacks import Callback
-from keras import backend as K
-
 
 def train_mimic(username):
   print "Creating Model..."

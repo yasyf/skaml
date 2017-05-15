@@ -2,7 +2,7 @@ from flask import render_template, session, jsonify, request, send_file, redirec
 from app import app
 from helpers.mongo import db
 from helpers.transform import transform, encode_chars, filter_valid
-from helpers.learn import string_delay, chars_delay
+from helpers.learn import string_delay, chars_delay, evaluate
 import uuid, io, os
 import numpy as np
 
@@ -16,6 +16,10 @@ def preprocess_request():
 @app.route('/')
 def index_view():
   return render_template('index.html')
+
+@app.route('/login')
+def login_view():
+  return render_template('login.html')
 
 @app.route('/client')
 def client_view():
@@ -49,6 +53,11 @@ def chars_mean_view(id):
   obj = db.sessions.find_one({'id': id})
   delays = chars_delay(obj, request.json['word']['characters'])
   return jsonify({'delays': delays})
+
+@app.route('/evaluate', methods=['POST'])
+def evaluate_view():
+  success, likelihood = evaluate(request.json['username'], request.json['password'])
+  return jsonify({'success': success, 'likelihood': likelihood})
 
 @app.route('/encode', methods=['POST'])
 def encode_view():

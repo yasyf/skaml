@@ -1,0 +1,12 @@
+{% extends "_base.html" %}
+{% block script %}
+  <script type="text/javascript" src="/static/js/login.js"></script>
+{% endblock %}
+{% block title %}Login{% endblock %}
+{% block body %}
+  <form id="loginform" autocomplete="off" role="presentation">
+    <b>Username:</b> <input autocomplete="off" type="text" id="username"></input><br>
+    <b>Password:</b> <input autocomplete="off" type="password" id="password"></input>
+    <div id="response"></div>
+  </form>
+{% endblock %}

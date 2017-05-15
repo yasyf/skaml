@@ -1,5 +1,13 @@
 from transform import ONE_HOT_SIZE, transform, str_to_idxs, chars_to_idxs
 import numpy as np
+import sys, os
+
+sys.path.append(os.path.abspath(os.path.join(os.pardir, 'train')))
+import predict
+
+def evaluate(username, password):
+  prob = predict.predict_distinguish(username, *transform({'words': [password]}))
+  return bool(np.argmax(prob) == 0), round(prob[0], 2)
 
 def one_hot_to_ind(x):
   return np.flatnonzero(x)[0]

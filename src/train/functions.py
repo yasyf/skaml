@@ -48,11 +48,7 @@ def filelist_to_mimic_data(filelist):
     y = np.append(y, out[2])
   return [x_1, x_2, y]
 
-def password_to_distinguish_data(filename):
-  X = np.load(filename)['X']
-  Y = np.load(filename)['Y']
-  Z = np.load(filename)['Z']
-
+def xyz_to_distinguish_data(X, Y, Z):
   output = []
   for i in range(len(X)):
     if len(X[i]) == 0:
@@ -62,7 +58,14 @@ def password_to_distinguish_data(filename):
     for j in range(len(Y[i])):
       a[c.MAX_WORD_SIZE - len(X[i]) + j + 1] = np.append(X[i][j + 1], [Z[i][j + 1]*0.01, Y[i][j]*0.01])
     output.append(a)
-  return output
+  return np.array(output)
+
+def password_to_distinguish_data(filename):
+  data = np.load(filename)
+  X = data['X']
+  Y = data['Y']
+  Z = data['Z']
+  return xyz_to_distinguish_data(X, Y, Z)
 
 def filelist_to_distinguish_data(filelist):
   x = np.zeros((0, c.MAX_WORD_SIZE, c.ALPHABET_SIZE + 2))

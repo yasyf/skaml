@@ -42,3 +42,7 @@ pre {
   top: -15px;
   left: -45px;
 }
+
+.response {
+  font-weight: bold;
+}
