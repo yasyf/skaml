@@ -2,21 +2,28 @@ import sys, os
 import constants as c
 import functions as f
 import numpy as np
-from keras.models import load_model
+import keras.models
 
 MODEL_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'models')
+MODEL_CACHE = {}
+
+def distinquish_model(username):
+  return os.path.join(MODEL_DIR, '{}-distinguish.h5'.format(username))
+
+def load_distinquish_model(username):
+  if username not in MODEL_CACHE:
+    MODEL_CACHE[username] = keras.models.load_model(distinquish_model(username))
+  return MODEL_CACHE[username]
 
 def predict_mimic(username, word):
-  model = load_model('models/' + username + '-mimic.h5')
+  model = keras.models.load_model('models/' + username + '-mimic.h5')
   return model.predict(f.wordmatrix_to_input(c.matrix_dict[word])).flatten().tolist()
 
 def predict_distinguish(username, word, timings, press_length):
-  model = os.path.join(MODEL_DIR, '{}-distinguish.h5'.format(username))
-  if not os.path.exists(model):
+  if not os.path.exists(distinquish_model(username)):
     return np.array([0., 1.])
   data = f.xyz_to_distinguish_data(word, timings, press_length)
-  model = load_model(model)
-  return model.predict(data).flatten()
+  return load_distinquish_model(username).predict(data).flatten()
 
 def main(args):
   if args[0] == 'mimic':
